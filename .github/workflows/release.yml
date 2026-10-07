@@ -35,4 +35,11 @@ jobs:
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "MarkFar-${GITHUB_REF_NAME}-x64.zip" --title "MarkFar ${GITHUB_REF_NAME}" --generate-notes
+        # A release created by hand before the tag push keeps its notes; only the zip is replaced.
+        run: |
+          zip="MarkFar-${GITHUB_REF_NAME}-x64.zip"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$zip" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$zip" --title "MarkFar ${GITHUB_REF_NAME}" --generate-notes
+          fi
