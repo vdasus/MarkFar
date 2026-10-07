@@ -55,10 +55,42 @@ strike-out are added as font styles for terminals that render them.
 ## Checks for the owner
 
 1. Open a few real `.md` files (`F11 → MarkFar`); compare with the source.
+ok
+
 2. `F2`, then resize the window: the text re-wraps, the place is kept.
+ok
+
 3. `F6` to the source, type something, `F6` back: the change shows without
    saving. `Esc` in the preview leaves the editor open.
+
+u F6 net nazvanija (4Quit, 5 pustoj, 6pustoj 7Search
+
+preview ne izmenilos' posle edit-save. t.e. otkryvaem md file F11-Mark, Nazhimaem F6, redaktiruem, F6 - preview staroe
+
+
 4. `Ctrl+Down` / `Ctrl+Up` on a long file.
+vrode rabotaet - prygaet po zagolovkam
+
+
 5. Settings dialog: switch "Show link URLs" off, reopen a preview.
+ok
+
 6. `F1` in the preview; Russian help when Far's interface is Russian.
+ne menial na russkij, budem schitat' chto ok. Eng - pokazyvaet
+
 7. `F3` on `*.md` after adding the file association.
+ok
+
+## Results
+
+First check, 2026-10-07: checks 1, 2, 4, 5, 6 (English help) and 7 pass.
+Check 3 found two problems, fixed in the next build:
+
+- **The preview kept the old text after `F6` from the source.** MarkFar
+  re-rendered the preview while the source editor was still the current
+  window; Far applies text changes only to the current editor. The preview
+  is now marked stale, brought to the front, and re-rendered from
+  `ProcessSynchroEventW` once it is current.
+- **The key bar showed no label for `F6`.** The preview now labels `F2`
+  "Wrap" and `F6` "Source"; a Markdown editor labels `F6` "Preview" (when
+  the `F6` setting is on).

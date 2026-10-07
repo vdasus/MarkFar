@@ -41,6 +41,9 @@ enum MsgId
 	MCancel,
 	MCannotRead,
 	MCannotWrite,
+	MKeyWrap,
+	MKeySource,
+	MKeyPreview,
 };
 
 PluginStartupInfo Far;
@@ -62,6 +65,7 @@ struct View
 	bool wrap = true;
 	int width = 0;               // text width the view was rendered for
 	int topSource = 0;           // source line to show at the top once opened
+	bool stale = false;          // text changed: re-render when the view is current
 	Rendered r;
 };
 
@@ -357,6 +361,21 @@ void Activate(intptr_t pos)
 	Far.AdvControl(&MainGuid, ACTL_COMMIT, 0, nullptr);
 }
 
+void SetKeyBar(intptr_t id, bool preview)
+{
+	KeyBarLabel preview_labels[] = {
+		{{VK_F2, 0}, Msg(MKeyWrap), Msg(MKeyWrap)},
+		{{VK_F6, 0}, Msg(MKeySource), Msg(MKeySource)},
+	};
+	KeyBarLabel source_labels[] = {
+		{{VK_F6, 0}, Msg(MKeyPreview), Msg(MKeyPreview)},
+	};
+	KeyBarTitles titles{};
+	if (preview) { titles.CountLabels = std::size(preview_labels); titles.Labels = preview_labels; }
+	else { titles.CountLabels = std::size(source_labels); titles.Labels = source_labels; }
+	Far.EditorControl(id, ECTL_SETKEYBAR, 0, &titles);
+}
+
 bool IsMarkdown(const std::wstring& file)
 {
 	const std::wstring f = Lower(file);
@@ -442,9 +461,13 @@ void OpenPreview(const std::wstring& source, const std::wstring& text, int topSo
 		intptr_t pos, id;
 		if (FindEditorWindow(v->id, L"", pos, id))
 		{
-			Activate(pos);
+			// Far edits only the current editor: switch first, re-render once
+			// the preview is in front (ProcessSynchroEventW).
 			v->text = text;
-			Rerender(*v, topSource);
+			v->topSource = topSource;
+			v->stale = true;
+			Activate(pos);
+			Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(v->id));
 			return;
 		}
 	}
@@ -677,6 +700,10 @@ intptr_t WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 		std::erase_if(Views, [&](const View& x) { return x.id == info->EditorID; });
 		break;
 	}
+	case EE_GOTFOCUS:
+		if (FindById(info->EditorID)) SetKeyBar(info->EditorID, true);
+		else if (Opt.f6InEditor && IsMarkdown(EditorFile(info->EditorID))) SetKeyBar(info->EditorID, false);
+		break;
 	case EE_REDRAW:
 	{
 		if (View* v = FindById(info->EditorID))
@@ -690,6 +717,7 @@ intptr_t WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 		if (View* v = FindByTemp(EditorFile(info->EditorID)))
 		{
 			v->id = info->EditorID;
+			SetKeyBar(v->id, true);
 			ApplyColors(*v);
 			SetTop(v->id, RenderedLineOf(*v, v->topSource));
 		}
@@ -707,7 +735,12 @@ intptr_t WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 	View* v = FindById(id);
 	if (!v || GetEditorInfo(-1).EditorID != id) return 0;
 	const EditorInfo ei = GetEditorInfo(id);
-	if (TextWidth(static_cast<int>(ei.WindowSizeX)) != v->width) Rerender(*v, SourceLineOf(*v, ei.TopScreenLine));
+	if (v->stale)
+	{
+		v->stale = false;
+		Rerender(*v, v->topSource);
+	}
+	else if (TextWidth(static_cast<int>(ei.WindowSizeX)) != v->width) Rerender(*v, SourceLineOf(*v, ei.TopScreenLine));
 	return 0;
 }
 
