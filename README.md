@@ -37,6 +37,10 @@ That is all. On its first start MarkFar sets itself up:
   MarkFar copies `markfar.hrc` there. Colorer picks this up after a restart
   of Far at the latest.
 
+**The first start takes longer:** Colorer shows "Reloading schema
+library..." for a few seconds while it loads MarkFar's scheme. This happens
+once, after installation; later starts are as fast as before.
+
 Both can be switched off in `F9` → `Options` → `Plugins configuration` →
 `MarkFar`; switching off undoes the change.
 

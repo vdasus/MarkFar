@@ -7,7 +7,8 @@ INSTALL
        %APPDATA%\Far Manager\Profile\Plugins
    (paste this path into the Explorer address bar; create the "Plugins"
    folder if it does not exist).
-3. Start Far.
+3. Start Far. The first start takes a few seconds longer: Colorer shows
+   "Reloading schema library..." once while it loads MarkFar's scheme.
 
 Done. F3 on a .md file opens the preview, F1 in the preview shows the help.
 Settings: F9 > Options > Plugins configuration > MarkFar.
@@ -22,7 +23,8 @@ options in the settings, close Far, delete the folder.
        %APPDATA%\Far Manager\Profile\Plugins
    (вставьте этот путь в адресную строку Проводника; создайте папку
    "Plugins", если её нет).
-3. Запустите Far.
+3. Запустите Far. Первый запуск на несколько секунд дольше: Colorer один
+   раз показывает "Reloading schema library...", загружая схему MarkFar.
 
 Готово. F3 на файле .md открывает просмотр, F1 в просмотре - справка.
 Настройки: F9 > Параметры > Параметры внешних модулей > MarkFar.
@@ -35,7 +37,9 @@ DIEGIMAS
        %APPDATA%\Far Manager\Profile\Plugins
    (įklijuokite šį kelią į Failų naršyklės adreso juostą; jei aplanko
    "Plugins" nėra, sukurkite jį).
-3. Paleiskite Far.
+3. Paleiskite Far. Pirmasis paleidimas keliomis sekundėmis ilgesnis:
+   Colorer vieną kartą rodo "Reloading schema library...", įkeldamas
+   MarkFar schemą.
 
 Baigta. F3 ant .md failo atveria peržiūrą, F1 peržiūroje - žinynas.
 Nustatymai: F9 > Parinktys > Įskiepių konfigūracija > MarkFar.
