@@ -78,7 +78,7 @@ OK.
 OK.
 
 - Code blocks wrap too, with a continuation mark at the start of each
-  continued line (for example `↪`), so a wrapped code line is not mistaken
+  continued line (`»`, which every console font has), so a wrapped code line is not mistaken
   for two lines.
 
 OK.

@@ -6,7 +6,7 @@
 
     ── <type> ─────
     code line
-    ↪ continuation of a wrapped code line
+    » continuation of a wrapped code line
     ───────────────
 
   where <type> is a Colorer type name. Each block below hands its body to
@@ -27,7 +27,7 @@
   <region name="Wrap" parent="def:Comment"/>
 
   <scheme name="Wrap">
-    <regexp match="/^↪ /" region="Wrap"/>
+    <regexp match="/^» /" region="Wrap"/>
   </scheme>
 
   <scheme name="code-sql"><inherit scheme="Wrap"/><inherit scheme="sql:sql"/></scheme>

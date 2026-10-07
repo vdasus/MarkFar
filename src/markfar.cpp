@@ -96,10 +96,20 @@ std::wstring SpikeText(const std::wstring& source, size_t width, std::vector<Lin
 	lines.push_back(L"── sql " + std::wstring(width > 8 ? width - 8 : 4, L'─'));
 	Wrap(L"SELECT c.Id, c.Name, c.Email, p.PolicyNumber, p.StartDate, p.EndDate, p.Premium "
 		L"FROM Customers c JOIN Policies p ON p.CustomerId = c.Id WHERE p.Status = 'Active' "
-		L"AND p.EndDate > GETDATE() ORDER BY p.EndDate; -- comment", width, L"↪ ", lines);
+		L"AND p.EndDate > GETDATE() ORDER BY p.EndDate; -- comment", width, L"» ", lines);
 	lines.push_back(L"  -- a short comment line");
 	lines.push_back(L"UPDATE Policies SET Status = 'Expired' WHERE EndDate < GETDATE();");
 	lines.push_back(std::wstring(width > 1 ? width - 1 : 1, L'─'));
+	lines.push_back(L"");
+
+	// Glyph test: the heading underline (═) did not show in the first spike run.
+	lines.push_back(L"Glyph test, four lines: ═ plain, ═ yellow, ─ yellow, = yellow:");
+	lines.push_back(std::wstring(13, L'═'));
+	for (wchar_t ch : {L'═', L'─', L'='})
+	{
+		colors.push_back({static_cast<intptr_t>(lines.size()), 0, 12, Accent(base, 14, FCF_NONE)});
+		lines.push_back(std::wstring(13, ch));
+	}
 	lines.push_back(L"");
 	lines.push_back(L"End of sample.");
 
