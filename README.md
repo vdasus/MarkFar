@@ -3,6 +3,8 @@
 A Markdown preview plugin for [Far Manager 3](https://www.farmanager.com/):
 open a `.md` file and read it rendered, with syntax highlighting, inside Far.
 
+![MarkFar: F3 opens the preview, F2 toggles wrap, F6 switches to the source and back](docs/images/markfar-demo.gif)
+
 Requires Far Manager 3 x64 (tested with build 6699). Colorer, which ships
 with Far, colours the code blocks.
 

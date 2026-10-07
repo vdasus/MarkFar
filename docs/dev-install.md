@@ -42,7 +42,7 @@ tar -xJf llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64.tar.xz && rm llvm-mingw-*.
 
 `build.sh` finds it there; putting its `bin` folder on `PATH` works as well.
 
-## Build and install
+## CHANGED Build and install
 
 1. Close Far Manager. Far keeps `MarkFar.dll` loaded, so a running Far blocks
    the copy. (Not needed for the very first install.)
