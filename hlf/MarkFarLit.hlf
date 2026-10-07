@@ -39,6 +39,8 @@ plėtiniams: #F9 → Komandos → Failų susiejimai#, peržiūros komanda (F3)
 
 @Preview
 $ #Klavišai peržiūroje#
+  MarkFar @VERSION@
+
   Peržiūra – tai užrakintas Far redaktorius: įprasti judėjimo, paieškos
 (#F7#) ir kopijavimo klavišai veikia, tekstą keisti negalima.
 

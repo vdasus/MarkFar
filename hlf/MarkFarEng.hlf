@@ -38,6 +38,8 @@ including changes not saved yet.
 
 @Preview
 $ #Keys in the preview#
+  MarkFar @VERSION@
+
   The preview is Far's editor in locked mode: the usual keys for moving,
 searching (#F7#) and copying work; the text cannot be changed.
 

@@ -221,13 +221,16 @@ bool SetupColorer(bool enable)
 	FarSettingsCreate fsc{sizeof(FarSettingsCreate), ColorerGuid, INVALID_HANDLE_VALUE};
 	if (!Far.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, PSL_ROAMING, &fsc)) return false;
 	const HANDLE h = fsc.Handle;
-	FarSettingsValue sub{sizeof(FarSettingsValue), 0, ColorerKey};
-	intptr_t key = Far.SettingsControl(h, SCTL_OPENSUBKEY, 0, &sub);
-	if (!key) key = Far.SettingsControl(h, SCTL_CREATESUBKEY, 0, &sub);
+	// Far opens a plugin's settings at the plugin's own key, so Colorer's
+	// values sit at the root. 0.2.0 wrongly wrote into a subkey named after
+	// Colorer's GUID: remove it.
+	FarSettingsValue stray{sizeof(FarSettingsValue), 0, ColorerKey};
+	if (Far.SettingsControl(h, SCTL_OPENSUBKEY, 0, &stray)) Far.SettingsControl(h, SCTL_DELETE, 0, &stray);
+	const intptr_t key = 0;
 
 	FarSettingsItem item{sizeof(FarSettingsItem), static_cast<size_t>(key), L"UserHrcPath", FST_STRING, {}};
 	std::wstring current;
-	if (key && Far.SettingsControl(h, SCTL_GET, 0, &item) && item.String) current = item.String;
+	if (Far.SettingsControl(h, SCTL_GET, 0, &item) && item.String) current = item.String;
 	const std::wstring ours = PluginDir() + L"\\hrc";
 
 	bool changed = false;
@@ -235,7 +238,7 @@ bool SetupColorer(bool enable)
 	{
 		FarSettingsItem w{sizeof(FarSettingsItem), static_cast<size_t>(key), L"UserHrcPath", FST_STRING, {}};
 		w.String = value;
-		changed = key && Far.SettingsControl(h, SCTL_SET, 0, &w);
+		changed = Far.SettingsControl(h, SCTL_SET, 0, &w) != 0;
 	};
 	if (enable)
 	{
@@ -666,7 +669,7 @@ std::wstring CurrentPanelFile()
 
 bool Configure()
 {
-	const int w = 64, h = 11;
+	const int w = 66, h = 11;
 	FarDialogItem items[] = {
 		{DI_DOUBLEBOX, 3, 1, w - 4, h - 2, {}, nullptr, nullptr, DIF_NONE, Msg(MConfigTitle)},
 		{DI_CHECKBOX, 5, 2, 0, 2, {Opt.wrap}, nullptr, nullptr, DIF_NONE, Msg(MWrap)},
