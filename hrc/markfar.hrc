@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MarkFar: colours code blocks in the MarkFar preview through Colorer.
+  The preview is a temporary *.mfview file. MarkFar frames each fenced code
+  block as
+
+    ── <type> ─────
+    code line
+    ↪ continuation of a wrapped code line
+    ───────────────
+
+  where <type> is a Colorer type name. Each block below hands its body to
+  that type's scheme. Adding a language is one block line and one scheme line.
+-->
+<hrc version="take5" xmlns="http://colorer.sf.net/2003/hrc"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+
+<prototype name="markfar" group="other" description="MarkFar preview">
+  <filename weight="10">/\.mfview$/i</filename>
+</prototype>
+
+<type name="markfar">
+  <import type="def"/>
+
+  <region name="Frame" parent="def:Comment"/>
+  <region name="Wrap" parent="def:Comment"/>
+
+  <scheme name="Wrap">
+    <regexp match="/^↪ /" region="Wrap"/>
+  </scheme>
+
+  <scheme name="code-sql"><inherit scheme="Wrap"/><inherit scheme="sql:sql"/></scheme>
+  <scheme name="code-csharp"><inherit scheme="Wrap"/><inherit scheme="csharp:csharp"/></scheme>
+  <scheme name="code-python"><inherit scheme="Wrap"/><inherit scheme="python:python"/></scheme>
+  <scheme name="code-jScript"><inherit scheme="Wrap"/><inherit scheme="jScript:jScript"/></scheme>
+  <scheme name="code-json"><inherit scheme="Wrap"/><inherit scheme="json:json"/></scheme>
+  <scheme name="code-powershell"><inherit scheme="Wrap"/><inherit scheme="powershell:powershell"/></scheme>
+  <scheme name="code-yaml"><inherit scheme="Wrap"/><inherit scheme="yaml:yaml"/></scheme>
+  <scheme name="code-xml"><inherit scheme="Wrap"/><inherit scheme="xml:xml"/></scheme>
+  <scheme name="code-html"><inherit scheme="Wrap"/><inherit scheme="html:html"/></scheme>
+  <scheme name="code-shell"><inherit scheme="Wrap"/><inherit scheme="shell:shell"/></scheme>
+  <scheme name="code-cpp"><inherit scheme="Wrap"/><inherit scheme="cpp:cpp"/></scheme>
+  <scheme name="code-c"><inherit scheme="Wrap"/><inherit scheme="c:c"/></scheme>
+  <scheme name="code-java"><inherit scheme="Wrap"/><inherit scheme="java:java"/></scheme>
+  <scheme name="code-css"><inherit scheme="Wrap"/><inherit scheme="css:css"/></scheme>
+  <scheme name="code-Batch"><inherit scheme="Wrap"/><inherit scheme="Batch:Batch"/></scheme>
+  <scheme name="code-markdown"><inherit scheme="Wrap"/><inherit scheme="markdown:markdown"/></scheme>
+  <scheme name="code-diff"><inherit scheme="Wrap"/><inherit scheme="diff:diff"/></scheme>
+  <scheme name="code-go"><inherit scheme="Wrap"/><inherit scheme="go:go"/></scheme>
+
+  <scheme name="markfar">
+    <block start="/^(── sql ─*)$/" end="/^(─+)$/" scheme="code-sql" region00="Frame" region10="Frame"/>
+    <block start="/^(── csharp ─*)$/" end="/^(─+)$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
+    <block start="/^(── python ─*)$/" end="/^(─+)$/" scheme="code-python" region00="Frame" region10="Frame"/>
+    <block start="/^(── jScript ─*)$/" end="/^(─+)$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
+    <block start="/^(── json ─*)$/" end="/^(─+)$/" scheme="code-json" region00="Frame" region10="Frame"/>
+    <block start="/^(── powershell ─*)$/" end="/^(─+)$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
+    <block start="/^(── yaml ─*)$/" end="/^(─+)$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
+    <block start="/^(── xml ─*)$/" end="/^(─+)$/" scheme="code-xml" region00="Frame" region10="Frame"/>
+    <block start="/^(── html ─*)$/" end="/^(─+)$/" scheme="code-html" region00="Frame" region10="Frame"/>
+    <block start="/^(── shell ─*)$/" end="/^(─+)$/" scheme="code-shell" region00="Frame" region10="Frame"/>
+    <block start="/^(── cpp ─*)$/" end="/^(─+)$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
+    <block start="/^(── c ─*)$/" end="/^(─+)$/" scheme="code-c" region00="Frame" region10="Frame"/>
+    <block start="/^(── java ─*)$/" end="/^(─+)$/" scheme="code-java" region00="Frame" region10="Frame"/>
+    <block start="/^(── css ─*)$/" end="/^(─+)$/" scheme="code-css" region00="Frame" region10="Frame"/>
+    <block start="/^(── Batch ─*)$/" end="/^(─+)$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
+    <block start="/^(── markdown ─*)$/" end="/^(─+)$/" scheme="code-markdown" region00="Frame" region10="Frame"/>
+    <block start="/^(── diff ─*)$/" end="/^(─+)$/" scheme="code-diff" region00="Frame" region10="Frame"/>
+    <block start="/^(── go ─*)$/" end="/^(─+)$/" scheme="code-go" region00="Frame" region10="Frame"/>
+  </scheme>
+</type>
+</hrc>

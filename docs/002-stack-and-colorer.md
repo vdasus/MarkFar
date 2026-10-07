@@ -15,25 +15,32 @@ Colorer for code highlighting is welcome but not a requirement.
 | Far Manager | 3.0.6699.0 x64 | `Far.exe` version resource |
 | Plugin SDK | 3.0.6699, `PluginSDK\Headers.c\plugin.hpp` | ships with Far |
 | FarColorer | installed, `Plugins\FarColorer`, base 1.2.0.99 | plugin folder |
-| Compiler | Visual Studio Professional 2026 (18.10), MSVC 14.51 | `vswhere`, `VC\Tools\MSVC` |
+| Compiler | Visual Studio Professional 2026 (18.10) without the C++ workload: no MSVC headers, no Windows SDK | `vswhere`, `VC\Tools\MSVC`, `Windows Kits` |
+| Shell | `cmd.exe`, `.cmd` and `.bat` blocked by group policy; PowerShell in Constrained Language mode | running them |
 | CMake | not found in the Visual Studio folder | file check |
 
 ## Decision: stack
 
 - **Language: C++20.** Far's API is wide-character and struct-based;
   `std::wstring`, `std::vector` and RAII remove most of the bookkeeping that C
-  would need, with no runtime cost. No exceptions across the plugin boundary,
-  no RTTI-dependent code.
-- **Compiler: MSVC from Visual Studio 2026**, x64 only (the installed Far is
-  x64; an x86 build is one switch away if ever needed).
-- **Static runtime (`/MT`).** The result is one DLL with no dependency on the
-  Visual C++ Redistributable.
-- **Build: a single `build.cmd`** that calls `vcvars64.bat` and `cl.exe`. No
-  CMake (not installed), no solution files to maintain. A `.vcxproj` for
-  debugging in Visual Studio can be added later if needed.
+  would need, with no runtime cost.
+- **Compiler: clang from llvm-mingw**, x64 only (the installed Far is x64).
+  Changed on 2026-10-07 from MSVC: the Visual Studio 2026 installation has no
+  "Desktop development with C++" workload (no MSVC headers, no Windows SDK),
+  and group policy blocks `cmd.exe` and every `.cmd`/`.bat` file, including
+  `vcvars64.bat`. llvm-mingw is a self-contained archive, needs no
+  administrator rights, and runs under WSL and on a GitHub Ubuntu runner alike.
+- **Static C++ runtime (`-static`).** The result is one DLL that depends only
+  on Windows itself (`KERNEL32`, `USER32` and the Universal CRT that ships with
+  Windows 10 and later). No Visual C++ Redistributable.
+- **Build: a single `build.sh`**, run under WSL. No CMake, no project files.
+  It also installs the build into the Far profile (`docs/dev-install.md`).
+- **Exports through `src/markfar.def`**, so only Far's entry points are
+  exported.
 - **Markdown parser: md4c** (MIT), vendored as source (`md4c.c`, `md4c.h`)
   and compiled into the DLL. CommonMark-compliant, with tables, task lists,
   strikethrough and autolinks; streaming callbacks, no syntax tree to allocate.
+- **Far SDK headers vendored** in `sdk/` (BSD 3-Clause), so CI needs no Far.
 - **No other third-party code.**
 
 ## Requirement: word wrap
