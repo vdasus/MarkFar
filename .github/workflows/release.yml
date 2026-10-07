@@ -24,7 +24,7 @@ jobs:
           echo "$PWD/${LLVM_MINGW}/bin" >> "$GITHUB_PATH"
 
       - name: Build
-        run: ./build.sh noinstall
+        run: bash build.sh noinstall
 
       - name: Package
         run: |
