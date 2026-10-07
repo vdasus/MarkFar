@@ -25,6 +25,10 @@ with Far, colours the code blocks.
    does not exist). The result is
    `%APPDATA%\Far Manager\Profile\Plugins\MarkFar\MarkFar.dll`.
    No administrator rights are needed.
+
+   **Or** copy it into the `Plugins` folder of the Far installation, next to
+   `Far.exe`, for example `C:\APP\Far3\Plugins`. Far loads plugins from both
+   places. Under `C:\Program Files` this needs administrator rights.
 4. **Start Far.** `F11` now lists "MarkFar".
 
 That is all. On its first start MarkFar sets itself up:

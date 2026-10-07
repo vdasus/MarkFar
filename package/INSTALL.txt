@@ -6,7 +6,10 @@ INSTALL
 2. Copy the folder "MarkFar" from this archive into
        %APPDATA%\Far Manager\Profile\Plugins
    (paste this path into the Explorer address bar; create the "Plugins"
-   folder if it does not exist).
+   folder if it does not exist),
+   OR into the "Plugins" folder of the Far installation, next to Far.exe,
+   for example C:\APP\Far3\Plugins (under C:\Program Files this needs
+   administrator rights).
 3. Start Far. The first start takes a few seconds longer: Colorer shows
    "Reloading schema library..." once while it loads MarkFar's scheme.
 
@@ -22,7 +25,10 @@ options in the settings, close Far, delete the folder.
 2. Скопируйте папку "MarkFar" из архива в
        %APPDATA%\Far Manager\Profile\Plugins
    (вставьте этот путь в адресную строку Проводника; создайте папку
-   "Plugins", если её нет).
+   "Plugins", если её нет),
+   ИЛИ в папку "Plugins" установленного Far, рядом с Far.exe,
+   например C:\APP\Far3\Plugins (в C:\Program Files нужны права
+   администратора).
 3. Запустите Far. Первый запуск на несколько секунд дольше: Colorer один
    раз показывает "Reloading schema library...", загружая схему MarkFar.
 
@@ -36,7 +42,10 @@ DIEGIMAS
 2. Nukopijuokite aplanką "MarkFar" iš archyvo į
        %APPDATA%\Far Manager\Profile\Plugins
    (įklijuokite šį kelią į Failų naršyklės adreso juostą; jei aplanko
-   "Plugins" nėra, sukurkite jį).
+   "Plugins" nėra, sukurkite jį),
+   ARBA į įdiegto Far aplanką "Plugins", šalia Far.exe, pavyzdžiui,
+   C:\APP\Far3\Plugins (aplanke C:\Program Files reikia administratoriaus
+   teisių).
 3. Paleiskite Far. Pirmasis paleidimas keliomis sekundėmis ilgesnis:
    Colorer vieną kartą rodo "Reloading schema library...", įkeldamas
    MarkFar schemą.
