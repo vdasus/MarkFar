@@ -51,7 +51,11 @@ a tab character.
 - **Closing:**
   - `Esc` in the preview closes only the preview. A source editor with
     unsaved changes stays open, so nothing is lost.
-  - Closing the source editor (`EE_CLOSE`) closes its preview as well.
+  - Closing the source editor does not close the preview. Changed in 0.1.2:
+    the owner returns to the preview with `Esc` from the source (`F3`, `F6`,
+    edit, `F2`, `Esc`), so saving (`EE_SAVE`) or closing (`EE_CLOSE`) the
+    source marks the preview stale, and it re-renders with the new text when
+    it is in front again.
 - **`F6` in other `.md` editors:** a `.md` file opened with `F4` from the
   panel is the same ordinary editor, so `F6` there opens the preview too
   instead of Far's viewer. A setting "F6 in Markdown editor opens preview"

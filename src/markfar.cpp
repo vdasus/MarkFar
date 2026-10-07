@@ -660,11 +660,26 @@ intptr_t WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 	if (Busy) return 0;
 	switch (info->Event)
 	{
+	case EE_SAVE:
 	case EE_CLOSE:
-	{
-		std::erase_if(Views, [&](const View& x) { return x.id == info->EditorID; });
+		// The source of an open preview was saved or closed: the preview shows
+		// the new text when it is next in front (Esc from the source leads there).
+		if (!FindById(info->EditorID))
+		{
+			const std::wstring file = EditorFile(info->EditorID);
+			if (View* v = FindBySource(file); v && v->id >= 0)
+			{
+				std::wstring text;
+				if (info->Event == EE_SAVE) text = EditorText(info->EditorID);
+				else if (!ReadSource(file, text)) break;
+				v->text = std::move(text);
+				v->topSource = static_cast<int>(GetEditorInfo(info->EditorID).TopScreenLine);
+				v->stale = true;
+			}
+		}
+		if (info->Event == EE_CLOSE)
+			std::erase_if(Views, [&](const View& x) { return x.id == info->EditorID; });
 		break;
-	}
 	case EE_GOTFOCUS:
 		if (View* v = FindById(info->EditorID))
 		{
