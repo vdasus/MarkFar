@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cwchar>
 #include <map>
+#include <string_view>
 
 namespace markfar {
 
@@ -135,16 +136,16 @@ std::vector<Line> Layout(const Segs& segs, int avail)
 		if (u.spaceBefore && len > 0) put(L" ", u.spaceStyle, u.pieces.front().src);
 		for (const auto& p : u.pieces)
 		{
-			std::wstring rest = p.text;
-			while (len + static_cast<int>(rest.size()) > avail && avail > 0)
+			size_t at = 0;
+			while (len + static_cast<int>(p.text.size() - at) > avail && avail > 0)
 			{
 				const int room = avail - len;
 				if (room <= 0) { newline(); continue; }
-				put(rest.substr(0, room), p.style, p.src);
-				rest.erase(0, room);
+				put(p.text.substr(at, room), p.style, p.src);
+				at += room;
 				newline();
 			}
-			if (!rest.empty()) put(rest, p.style, p.src);
+			if (at < p.text.size()) put(p.text.substr(at), p.style, p.src);
 		}
 	}
 	if (!cur.segs.empty() || out.empty()) out.push_back(std::move(cur));
@@ -233,20 +234,36 @@ private:
 		return s;
 	}
 
+	static int OwnWidth(const Container& c)
+	{
+		if (c.kind == Container::Quote || c.kind == Container::Note) return 2;
+		return c.kind == Container::Item ? static_cast<int>(c.marker.size()) : 0;
+	}
+
+	// Containers that get a prefix. Deeper ones are not drawn: every line
+	// repeats the prefix, so hostile nesting would multiply the output.
+	size_t Shown() const
+	{
+		int w = 0;
+		size_t n = 0;
+		for (; n < stack_.size(); ++n)
+			if ((w += OwnWidth(stack_[n])) > opt_.width / 2) break;
+		return n;
+	}
+
 	int PrefixWidth() const
 	{
 		int w = 0;
-		for (const auto& c : stack_)
-			if (c.kind == Container::Quote || c.kind == Container::Note) w += 2;
-			else if (c.kind == Container::Item) w += static_cast<int>(c.marker.size());
+		for (size_t i = 0, n = Shown(); i < n; ++i) w += OwnWidth(stack_[i]);
 		return w;
 	}
 
 	Segs Prefix(bool markers)
 	{
 		Segs p;
-		for (auto& c : stack_)
+		for (size_t i = 0, n = Shown(); i < n; ++i)
 		{
+			Container& c = stack_[i];
 			if (c.kind == Container::Quote || c.kind == Container::Note)
 				p.push_back({L"│ ", c.kind == Container::Note ? S_TITLE : S_DIM, cur_});
 			else if (c.kind == Container::Item)
@@ -282,8 +299,8 @@ private:
 	void Blank()
 	{
 		Segs bars;
-		for (const auto& c : stack_)
-			if (c.kind == Container::Quote || c.kind == Container::Note)
+		for (size_t i = 0, n = Shown(); i < n; ++i)
+			if (const Container& c = stack_[i]; c.kind == Container::Quote || c.kind == Container::Note)
 				bars.push_back({L"│", c.kind == Container::Note ? S_TITLE : S_DIM, cur_});
 			else if (c.kind == Container::Item)
 				bars.push_back({std::wstring(c.marker.size(), L' '), 0, cur_});
@@ -369,25 +386,23 @@ private:
 			for (wchar_t ch : line)
 				if (ch == L'\t') rest.append(4 - rest.size() % 4, L' ');
 				else if (ch != L'\r') rest += ch;
-			bool firstPart = true;
+			size_t at = 0;
 			do
 			{
-				const int room = std::max(firstPart ? avail : avail - 2, 1);
-				size_t take = std::min(rest.size(), static_cast<size_t>(room));
-				if (take < rest.size())
+				const int room = std::max(at == 0 ? avail : avail - 2, 1);
+				size_t take = std::min(rest.size() - at, static_cast<size_t>(room));
+				if (at + take < rest.size())
 				{
 					// prefer to break after a space in the second half of the line
-					const size_t sp = rest.rfind(L' ', take - 1);
+					const size_t sp = std::wstring_view(rest).substr(at, take).rfind(L' ');
 					if (sp != std::wstring::npos && sp + 1 > take / 2) take = sp + 1;
 				}
-				std::wstring part = rest.substr(0, take);
-				rest.erase(0, part.size());
 				Segs segs;
-				if (!firstPart) segs.push_back({L"» ", S_DIM, src});
-				segs.push_back({part, style, src});
+				if (at != 0) segs.push_back({L"» ", S_DIM, src});
+				segs.push_back({rest.substr(at, take), style, src});
 				Emit(segs, src);
-				firstPart = false;
-			} while (!rest.empty());
+				at += take;
+			} while (at < rest.size());
 		}
 		if (!html) FrameLine(L"", code_.empty() ? cur_ : code_.back().second);
 		code_.clear();

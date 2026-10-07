@@ -336,8 +336,11 @@ bool ReadSource(const std::wstring& path, std::wstring& text)
 {
 	HANDLE h = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
 	if (h == INVALID_HANDLE_VALUE) return false;
+	// The preview takes many times the file size in memory; larger files are
+	// not Markdown anyone reads, and the int conversions below need < 2 GB.
+	constexpr LONGLONG MaxSize = 64 << 20;
 	LARGE_INTEGER size{};
-	GetFileSizeEx(h, &size);
+	if (!GetFileSizeEx(h, &size) || size.QuadPart > MaxSize) { CloseHandle(h); return false; }
 	std::string bytes(static_cast<size_t>(size.QuadPart), '\0');
 	DWORD read = 0;
 	const bool ok = ReadFile(h, bytes.data(), static_cast<DWORD>(bytes.size()), &read, nullptr) && read == bytes.size();
@@ -382,8 +385,8 @@ std::wstring FileName(const std::wstring& path)
 
 std::wstring TempPath(const std::wstring& source)
 {
-	wchar_t dir[MAX_PATH];
-	GetTempPathW(MAX_PATH, dir);
+	wchar_t dir[MAX_PATH + 1]{};   // stays empty if GetTempPathW fails
+	if (GetTempPathW(std::size(dir), dir) > MAX_PATH) dir[0] = L'\0';
 	std::wstring folder = std::wstring(dir) + L"MarkFar";
 	CreateDirectoryW(folder.c_str(), nullptr);
 	unsigned hash = 2166136261u;   // FNV-1a: one temp file per source path
