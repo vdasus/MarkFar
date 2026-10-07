@@ -13,7 +13,8 @@ with Far, colours the code blocks.
 1. **Download** `MarkFar-<version>-x64.zip` from
    [Releases](https://github.com/vdasus/MarkFar/releases/latest).
 2. **Close Far Manager.**
-3. **Unpack** the zip. It contains one folder, `MarkFar`. Copy that folder
+3. **Unpack** the zip. It contains the folder `MarkFar` and these steps as
+   `INSTALL.txt` (English, Russian, Lithuanian). Copy the folder
    into the plugins folder of your Far profile:
 
    ```

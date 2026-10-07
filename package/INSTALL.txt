@@ -1,0 +1,44 @@
+﻿MarkFar - Markdown preview for Far Manager 3 (x64)
+https://github.com/vdasus/MarkFar
+
+INSTALL
+1. Close Far Manager.
+2. Copy the folder "MarkFar" from this archive into
+       %APPDATA%\Far Manager\Profile\Plugins
+   (paste this path into the Explorer address bar; create the "Plugins"
+   folder if it does not exist).
+3. Start Far.
+
+Done. F3 on a .md file opens the preview, F1 in the preview shows the help.
+Settings: F9 > Options > Plugins configuration > MarkFar.
+Update: close Far, replace the folder. Remove: switch off the two setup
+options in the settings, close Far, delete the folder.
+
+-------------------------------------------------------------------------
+
+УСТАНОВКА
+1. Закройте Far Manager.
+2. Скопируйте папку "MarkFar" из архива в
+       %APPDATA%\Far Manager\Profile\Plugins
+   (вставьте этот путь в адресную строку Проводника; создайте папку
+   "Plugins", если её нет).
+3. Запустите Far.
+
+Готово. F3 на файле .md открывает просмотр, F1 в просмотре - справка.
+Настройки: F9 > Параметры > Параметры внешних модулей > MarkFar.
+
+-------------------------------------------------------------------------
+
+DIEGIMAS
+1. Uždarykite Far Manager.
+2. Nukopijuokite aplanką "MarkFar" iš archyvo į
+       %APPDATA%\Far Manager\Profile\Plugins
+   (įklijuokite šį kelią į Failų naršyklės adreso juostą; jei aplanko
+   "Plugins" nėra, sukurkite jį).
+3. Paleiskite Far.
+
+Baigta. F3 ant .md failo atveria peržiūrą, F1 peržiūroje - žinynas.
+Nustatymai: F9 > Parinktys > Įskiepių konfigūracija > MarkFar.
+
+-------------------------------------------------------------------------
+Provided as is, without warranty, under the BSD Zero Clause License.

@@ -29,7 +29,8 @@ jobs:
       - name: Package
         run: |
           cp LICENSE out/MarkFar/
-          (cd out && zip -r "../MarkFar-${GITHUB_REF_NAME}-x64.zip" MarkFar)
+          cp package/INSTALL.txt out/
+          (cd out && zip -r "../MarkFar-${GITHUB_REF_NAME}-x64.zip" INSTALL.txt MarkFar)
 
       - name: Release
         env:
