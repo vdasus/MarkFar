@@ -12,10 +12,13 @@ fi
 command -v "$CXX" >/dev/null || { echo "llvm-mingw not found (see docs/dev-install.md)"; exit 1; }
 
 OUT=out/MarkFar
-mkdir -p "$OUT"
-"$CXX" -std=c++20 -O2 -Wall -Wextra -municode -DUNICODE -D_UNICODE -Isdk \
-  -shared -static -s -o "$OUT/MarkFar.dll" src/*.cpp src/markfar.def
+mkdir -p "$OUT" out/obj
+CC=${CXX%++}
+"$CC" -std=c11 -O2 -DMD4C_USE_UTF16 -c third_party/md4c/md4c.c -o out/obj/md4c.o
+"$CXX" -std=c++20 -O2 -Wall -Wextra -Wno-missing-field-initializers -municode -DUNICODE -D_UNICODE -Isdk \
+  -shared -static -s -o "$OUT/MarkFar.dll" src/*.cpp src/markfar.def out/obj/md4c.o
 mkdir -p "$OUT/hrc" && cp hrc/markfar.hrc "$OUT/hrc/"
+cp lng/*.lng hlf/*.hlf "$OUT/"
 echo "Built $OUT/MarkFar.dll"
 
 [[ "${1:-}" == noinstall ]] && exit 0

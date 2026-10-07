@@ -1,0 +1,72 @@
+﻿.Language=English,English
+.PluginContents=MarkFar
+.Options CtrlStartPosChar=^<wrap>
+
+@Contents
+$ #MarkFar#
+  MarkFar shows a Markdown file rendered: headings, emphasis, lists, quotes,
+tables, links and code blocks with formatting and colour, wrapped to the
+window width. Code blocks are coloured by the Colorer plugin.
+
+  ~Opening the preview~@Open@
+  ~Keys in the preview~@Preview@
+  ~Settings~@Settings@
+  ~Colorer and code blocks~@Colorer@
+
+  MarkFar is free software under the BSD Zero Clause License, provided "as
+is", without warranty of any kind.
+
+@Open
+$ #Opening the preview#
+  #F11 → MarkFar# on a file in a panel opens its preview.
+
+  #F11 → MarkFar# in the editor switches between the file and its preview.
+
+  #markfar:<file># in the command line opens the preview of <file>.
+
+  #F3 on .md files.# Add a file association in
+#F9 → Commands → File associations#: mask #*.md#, command for view (F3)
+#markfar:!\!.!#. Delete the association to get Far's viewer back.
+
+  If the file is open in Far's editor, the preview shows the editor text,
+including changes not saved yet.
+
+@Preview
+$ #Keys in the preview#
+  The preview is Far's editor in locked mode: the usual keys for moving,
+searching (#F7#) and copying work; the text cannot be changed.
+
+  #F2#                   ^<wrap>Word wrap on or off.
+  #F6#                   ^<wrap>Switch to the file in Far's editor, at the same place. #F6# in the editor of a Markdown file returns to the preview, showing the current text.
+  #Ctrl+Down#            ^<wrap>Next heading.
+  #Ctrl+Up#              ^<wrap>Previous heading.
+  #Esc#, #F10#           ^<wrap>Close the preview. An open editor of the file stays open.
+  #F1#                   ^<wrap>This help.
+
+  When the window size changes, the preview is rendered again for the new
+width.
+
+@Settings
+$ #Settings#
+  #F9 → Options → Plugins configuration → MarkFar#
+
+  #Word wrap in the preview#
+  ^<wrap>Whether a new preview opens with word wrap. #F2# switches it in an open preview.
+
+  #Show link URLs#
+  ^<wrap>Shows the address after the text of each link.
+
+  #F6 in a Markdown editor opens the preview#
+  ^<wrap>When off, #F6# in the editor of a .md file opens Far's viewer, as usual.
+
+@Colorer
+$ #Colorer and code blocks#
+  Code blocks with a language tag (#```sql#, #```csharp#, ...) are coloured
+by the Colorer plugin through the scheme file #markfar.hrc#, which ships in
+the #hrc# folder of the plugin. Point Colorer at that folder once:
+
+  #F9 → Options → Plugins configuration → FarColorer#, field
+#Custom schemas folder (hrc)#, the full path of the #hrc# folder, for
+example #%APPDATA%\Far Manager\Profile\Plugins\MarkFar\hrc# written out.
+
+  Without Colorer, code blocks are shown in one colour.

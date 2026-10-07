@@ -1,0 +1,37 @@
+# Builds MarkFar on a version tag (v*) and attaches the zip to a GitHub release.
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  LLVM_MINGW: llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install llvm-mingw
+        run: |
+          curl -sSLO "https://github.com/mstorsjo/llvm-mingw/releases/download/20261006/${LLVM_MINGW}.tar.xz"
+          tar -xJf "${LLVM_MINGW}.tar.xz"
+          echo "$PWD/${LLVM_MINGW}/bin" >> "$GITHUB_PATH"
+
+      - name: Build
+        run: ./build.sh noinstall
+
+      - name: Package
+        run: |
+          cp LICENSE out/MarkFar/
+          (cd out && zip -r "../MarkFar-${GITHUB_REF_NAME}-x64.zip" MarkFar)
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "MarkFar-${GITHUB_REF_NAME}-x64.zip" --title "MarkFar ${GITHUB_REF_NAME}" --generate-notes

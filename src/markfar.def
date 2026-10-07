@@ -3,4 +3,7 @@ EXPORTS
 	SetStartupInfoW
 	GetPluginInfoW
 	OpenW
+	ConfigureW
 	ProcessEditorEventW
+	ProcessEditorInputW
+	ProcessSynchroEventW

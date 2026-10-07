@@ -1,0 +1,72 @@
+﻿.Language=Lithuanian,Lietuvių
+.PluginContents=MarkFar
+.Options CtrlStartPosChar=^<wrap>
+
+@Contents
+$ #MarkFar#
+  MarkFar rodo Markdown failą sutvarkytą: antraštes, paryškinimus, sąrašus,
+citatas, lenteles, nuorodas ir kodo blokus su formatavimu ir spalvomis,
+eilutes laužant pagal lango plotį. Kodo blokus spalvina įskiepis Colorer.
+
+  ~Kaip atverti peržiūrą~@Open@
+  ~Klavišai peržiūroje~@Preview@
+  ~Nustatymai~@Settings@
+  ~Colorer ir kodo blokai~@Colorer@
+
+  MarkFar – laisva programa, platinama pagal BSD Zero Clause licenciją,
+teikiama „tokia, kokia yra“, be jokių garantijų.
+
+@Open
+$ #Kaip atverti peržiūrą#
+  #F11 → MarkFar# ant failo skydelyje atveria jo peržiūrą.
+
+  #F11 → MarkFar# redaktoriuje perjungia tarp failo ir jo peržiūros.
+
+  #markfar:<failas># komandų eilutėje atveria <failo> peržiūrą.
+
+  #F3 ant .md failų.# Pridėkite failų susiejimą
+#F9 → Komandos → Failų susiejimai#: kaukė #*.md#, peržiūros komanda (F3)
+#markfar:!\!.!#. Norėdami grąžinti Far peržiūros programą, ištrinkite
+susiejimą.
+
+  Jei failas atvertas Far redaktoriuje, peržiūra rodo redaktoriaus tekstą,
+įskaitant dar neįrašytus pakeitimus.
+
+@Preview
+$ #Klavišai peržiūroje#
+  Peržiūra – tai užrakintas Far redaktorius: įprasti judėjimo, paieškos
+(#F7#) ir kopijavimo klavišai veikia, tekstą keisti negalima.
+
+  #F2#                   ^<wrap>Įjungti arba išjungti eilučių laužymą.
+  #F6#                   ^<wrap>Pereiti į failą Far redaktoriuje toje pačioje vietoje. #F6# Markdown failo redaktoriuje grąžina į peržiūrą su dabartiniu tekstu.
+  #Ctrl+Down#            ^<wrap>Kita antraštė.
+  #Ctrl+Up#              ^<wrap>Ankstesnė antraštė.
+  #Esc#, #F10#           ^<wrap>Uždaryti peržiūrą. Atvertas failo redaktorius lieka atvertas.
+  #F1#                   ^<wrap>Šis žinynas.
+
+  Pakeitus lango dydį, peržiūra perpiešiama pagal naują plotį.
+
+@Settings
+$ #Nustatymai#
+  #F9 → Parinktys → Įskiepių konfigūracija → MarkFar#
+
+  #Eilučių laužymas peržiūroje#
+  ^<wrap>Ar nauja peržiūra atveriama su eilučių laužymu. #F2# jį perjungia atvertoje peržiūroje.
+
+  #Rodyti nuorodų adresus#
+  ^<wrap>Po kiekvienos nuorodos teksto rodo jos adresą.
+
+  #F6 Markdown redaktoriuje atveria peržiūrą#
+  ^<wrap>Kai išjungta, #F6# .md failo redaktoriuje, kaip įprasta, atveria Far peržiūros programą.
+
+@Colorer
+$ #Colorer ir kodo blokai#
+  Kodo blokus su kalbos žyme (#```sql#, #```csharp#, ...) spalvina įskiepis
+Colorer pagal schemų failą #markfar.hrc#, esantį įskiepio aplanke #hrc#.
+Vieną kartą nurodykite Colorer šį aplanką:
+
+  #F9 → Parinktys → Įskiepių konfigūracija → FarColorer#, laukas
+#Custom schemas folder (hrc)#, visas aplanko #hrc# kelias, pavyzdžiui,
+išskleistas #%APPDATA%\Far Manager\Profile\Plugins\MarkFar\hrc#.
+
+  Be Colorer kodo blokai rodomi viena spalva.

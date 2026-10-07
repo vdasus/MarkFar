@@ -1,6 +1,6 @@
 # 005 — Spike: Colorer and MarkFar colours in one editor
 
-Status: done 2026-10-07.
+Status: done 2026-10-07. Version 1 replaced the spike build.
 
 The spike answers the open points of [002-stack-and-colorer](002-stack-and-colorer.md)
 and [004-preview-and-edit](004-preview-and-edit.md) before the real renderer is
