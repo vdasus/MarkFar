@@ -46,7 +46,31 @@
   <scheme name="code-java"><inherit scheme="Wrap"/><inherit scheme="java:java"/></scheme>
   <scheme name="code-css"><inherit scheme="Wrap"/><inherit scheme="css:css"/></scheme>
   <scheme name="code-Batch"><inherit scheme="Wrap"/><inherit scheme="Batch:Batch"/></scheme>
-  <scheme name="code-markdown"><inherit scheme="Wrap"/><inherit scheme="markdown:markdown"/></scheme>
+  <!-- A markdown code block may itself contain fenced code (an example of
+       Markdown source): colour those inner blocks by their language, the
+       rest by Colorer's markdown scheme. -->
+  <region name="MdFence" parent="Frame"/>
+  <scheme name="code-markdown">
+    <inherit scheme="Wrap"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:sql|tsql|plsql)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-sql" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:cs|csharp|c#)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:py|python)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-python" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:js|javascript|jsx|mjs|ts|typescript|tsx)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:json|jsonc)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-json" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:ps|ps1|powershell|pwsh)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:yaml|yml)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:xml|xaml|csproj|svg)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-xml" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:html|htm)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-html" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:sh|bash|shell|zsh)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-shell" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:cpp|c\+\+|cc|cxx|hpp)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:c|h)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-c" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:java)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-java" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:css)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-css" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:bat|cmd|batch)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:diff|patch)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-diff" region00="Frame" region10="Frame"/>
+    <block start="/^[\s│]*(?{MdFence}`{3,}|~{3,})\s*(?:go|golang)(?:[\s{,].*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-go" region00="Frame" region10="Frame"/>
+    <inherit scheme="markdown:markdown"/>
+  </scheme>
   <scheme name="code-diff"><inherit scheme="Wrap"/><inherit scheme="diff:diff"/></scheme>
   <scheme name="code-go"><inherit scheme="Wrap"/><inherit scheme="go:go"/></scheme>
 
