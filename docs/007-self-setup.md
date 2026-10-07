@@ -1,6 +1,6 @@
 # 007 — Setup without manual steps
 
-Status: implemented in 0.2.0; fixes in 0.2.1 wait for the owner's check.
+Status: done 2026-10-07, released as 0.2.1.
 
 ## Problem
 
@@ -84,3 +84,5 @@ Fixed in 0.2.1:
 - **No version in the help.** The version stood only in the contents topic;
   `F1` in the preview opens the keys topic. 0.2.1 shows it there as well.
 - **Settings dialog too narrow.** Wider dialog, shorter Colorer label.
+
+Second check, 0.2.1: all checks pass.
