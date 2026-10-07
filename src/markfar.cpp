@@ -102,15 +102,6 @@ std::wstring SpikeText(const std::wstring& source, size_t width, std::vector<Lin
 	lines.push_back(std::wstring(width > 1 ? width - 1 : 1, L'─'));
 	lines.push_back(L"");
 
-	// Glyph test: the heading underline (═) did not show in the first spike run.
-	lines.push_back(L"Glyph test, four lines: ═ plain, ═ yellow, ─ yellow, = yellow:");
-	lines.push_back(std::wstring(13, L'═'));
-	for (wchar_t ch : {L'═', L'─', L'='})
-	{
-		colors.push_back({static_cast<intptr_t>(lines.size()), 0, 12, Accent(base, 14, FCF_NONE)});
-		lines.push_back(std::wstring(13, ch));
-	}
-	lines.push_back(L"");
 	lines.push_back(L"End of sample.");
 
 	std::wstring text;

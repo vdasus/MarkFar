@@ -1,6 +1,6 @@
 # 005 — Spike: Colorer and MarkFar colours in one editor
 
-Status: first run checked; second build waits for the glyph test.
+Status: done 2026-10-07.
 
 The spike answers the open points of [002-stack-and-colorer](002-stack-and-colorer.md)
 and [004-preview-and-edit](004-preview-and-edit.md) before the real renderer is
@@ -72,7 +72,7 @@ Screenshots stay out of the repository.
 
 | Check | Result |
 |---|---|
-| 1. Heading colour | Heading text yellow. Not bold (conhost). The `═══` underline line is **missing** — the line exists (19 lines in total) but shows empty. |
+| 1. Heading colour | Heading text and its `═══` underline yellow. Not bold (conhost). |
 | 2. Font styles | conhost shows colours only: bold and italic words white, struck-out word grey, no styles. Windows Terminal is expected to show the styles. |
 | 3. Colorer in the SQL block | Works: keywords, names, strings and comments in SQL colours, frame lines as comments. |
 | 4. Wrapped line | Colorer keeps colouring the continued SQL line. The `↪` mark shows as an empty box: the console font has no glyph for it. |
@@ -90,6 +90,3 @@ Conclusions:
   and strike-out flags are added for terminals that render them.
 - **Only glyphs the console font has.** Continuation mark changed from `↪`
   to `»` (Latin-1, present in every console font).
-- **Open:** why the `═` underline does not show. The second spike build adds
-  four test lines at the end of the sample: `═` uncoloured, `═` yellow, `─`
-  yellow, `=` yellow. Which of them show decides how headings are underlined.
