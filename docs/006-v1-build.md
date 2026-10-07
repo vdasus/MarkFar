@@ -55,42 +55,53 @@ strike-out are added as font styles for terminals that render them.
 ## Checks for the owner
 
 1. Open a few real `.md` files (`F11 → MarkFar`); compare with the source.
-ok
+
+   OK.
 
 2. `F2`, then resize the window: the text re-wraps, the place is kept.
-ok
+
+   OK.
 
 3. `F6` to the source, type something, `F6` back: the change shows without
    saving. `Esc` in the preview leaves the editor open.
 
-u F6 net nazvanija (4Quit, 5 pustoj, 6pustoj 7Search
+   F6 has no label in the key bar (it shows 4 Quit, 5 empty, 6 empty,
+   7 Search).
 
-preview ne izmenilos' posle edit-save. t.e. otkryvaem md file F11-Mark, Nazhimaem F6, redaktiruem, F6 - preview staroe
-
+   The preview did not change after editing and saving: open a `.md` file
+   with `F11 → MarkFar`, press `F6`, edit, press `F6` — the preview is the
+   old one.
 
 4. `Ctrl+Down` / `Ctrl+Up` on a long file.
-vrode rabotaet - prygaet po zagolovkam
 
+   Seems to work: it jumps between headings.
 
 5. Settings dialog: switch "Show link URLs" off, reopen a preview.
-ok
+
+   OK.
 
 6. `F1` in the preview; Russian help when Far's interface is Russian.
-ne menial na russkij, budem schitat' chto ok. Eng - pokazyvaet
+
+   Did not switch Far to Russian; consider it OK. The English help shows.
 
 7. `F3` on `*.md` after adding the file association.
-ok
+
+   OK.
 
 ## Results
 
 First check, 2026-10-07: checks 1, 2, 4, 5, 6 (English help) and 7 pass.
-Check 3 found two problems, fixed in the next build:
+Check 3 found two problems.
 
-- **The preview kept the old text after `F6` from the source.** MarkFar
-  re-rendered the preview while the source editor was still the current
-  window; Far applies text changes only to the current editor. The preview
-  is now marked stale, brought to the front, and re-rendered from
-  `ProcessSynchroEventW` once it is current.
-- **The key bar showed no label for `F6`.** The preview now labels `F2`
-  "Wrap" and `F6` "Source"; a Markdown editor labels `F6` "Preview" (when
-  the `F6` setting is on).
+- **The preview kept the old text after `F6` from the source.** First fix
+  (re-render once the preview is current) did not help. Actual cause: the
+  lookup of the preview window in Far's window list failed, so MarkFar
+  treated the preview as closed, rewrote its temporary file and asked Far to
+  open it again; Far brought the already open editor with the old text to
+  the front. Fixed in 0.1.1: MarkFar brings editors to the front with Far's
+  own `EF_OPENMODE_USEEXISTING` and re-renders the preview once it has the
+  focus.
+- **The key bar showed no label for `F6`.** `ECTL_SETKEYBAR` takes a
+  `FarSetKeyBarTitles` structure, not `KeyBarTitles`. Fixed in 0.1.1: the
+  preview labels `F2` "Wrap" and `F6` "Source"; a Markdown editor labels
+  `F6` "Preview" (when the `F6` setting is on).

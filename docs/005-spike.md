@@ -11,7 +11,7 @@ on, it shows a fixed sample.
 
 * Registers the plugin menu item `F11 → MarkFar` (panels and editor) and the
 command prefix `markfar:`.
-* Writes a fixed sample to `%TEMP%\\MarkFar\\<file>.mfview` and opens it in a
+* Writes a fixed sample to `%TEMP%\MarkFar\<file>.mfview` and opens it in a
 locked editor that deletes the file on close.
 * Colours the sample heading itself (bold, bright yellow on the editor
 background) and one line with bold, italic and struck-out words.
@@ -22,48 +22,55 @@ width with a `» ` continuation mark (`↪` in the first build).
 ## How to run it
 
 1. Install the build and register `markfar.hrc` in Colorer:
-[dev-install](dev-install.md), sections "Build and install" and
-"Colorer scheme".
+   [dev-install](dev-install.md), sections "Build and install" and
+   "Colorer scheme".
 2. Restart Far.
 3. On any file in a panel: `F11 → MarkFar`. Or type
-`markfar:C:\\any\\file.md` in the command line.
+   `markfar:C:\any\file.md` in the command line.
 
 ## Checks
 
 Answer each with yes / no and a note; a screenshot helps for 1–4.
 
 1. **Heading colour.** "MarkFar spike" and the `═══` line under it are
-bright yellow; the heading is not seems bold.
+   bright yellow; the heading is bold.
+
+   Yellow, but the heading does not look bold.
 
 2. **Font styles.** On the line "Bold, italic and struck-out text …" the
-words are bold, italic and struck out. (Depends on the console: Windows
-Terminal shows all three; the classic console may show colour only.)
-i'm using conhost, see struck-out grayed, bold italic as white
+   words are bold, italic and struck out. (Depends on the console: Windows
+   Terminal shows all three; the classic console may show colour only.)
+
+   I use conhost: the struck-out word is grey, bold and italic are white.
 
 3. **Colorer in the SQL block.** Keywords, strings and the comment inside the
-block have SQL colours; the frame lines look like comments. If the whole
-preview stays plain, `F11 → FarColorer → List types` (or `Alt+L`) should
-show "MarkFar preview" as the current type.
-seems ok
+   block have SQL colours; the frame lines look like comments. If the whole
+   preview stays plain, `F11 → FarColorer → List types` (or `Alt+L`) should
+   show "MarkFar preview" as the current type.
+
+   Seems OK.
 
 4. **Wrapped line.** The continuation line starting with `↪` is coloured as
-SQL too, and the `↪ ` mark looks like a comment.
-↪ shown as ... i'll give you a screenshot
+   SQL too, and the `↪ ` mark looks like a comment.
+
+   `↪` is shown as an empty box; see the screenshot.
 
 5. **Both at once.** The heading keeps MarkFar's colour while Colorer is
-active — Colorer does not paint over it.
-don't understood - will see in attached screenshot
+   active — Colorer does not paint over it.
+
+   Not sure what to check; see the attached screenshot.
 
 6. **Locked.** Typing in the preview does nothing; `Esc` closes it without a
-save prompt, and `%TEMP%\\MarkFar` holds no `.mfview` file afterwards.
-yes
+   save prompt, and `%TEMP%\MarkFar` holds no `.mfview` file afterwards.
+
+   Yes.
 
 7. **`F3` with the file already open (for 004).** Open a `.md` file with
-`F4`, switch to the panels (`Ctrl+O` or `F12`), and press `F3` on the same
-file. What does Far do — open the viewer, or offer to switch to the open
-editor?
-After Ctrl+O - attached screenshot 2
+   `F4`, switch to the panels (`Ctrl+O` or `F12`), and press `F3` on the same
+   file. What does Far do — open the viewer, or offer to switch to the open
+   editor?
 
+   After `Ctrl+O`: attached screenshot 2.
 
 ## Results
 

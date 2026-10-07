@@ -4,6 +4,8 @@
 
 @Contents
 $ #MarkFar#
+  Version @VERSION@
+
   MarkFar shows a Markdown file rendered: headings, emphasis, lists, quotes,
 tables, links and code blocks with formatting and colour, wrapped to the
 window width. Code blocks are coloured by the Colorer plugin.

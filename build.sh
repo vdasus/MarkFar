@@ -18,8 +18,10 @@ CC=${CXX%++}
 "$CXX" -std=c++20 -O2 -Wall -Wextra -Wno-missing-field-initializers -municode -DUNICODE -D_UNICODE -Isdk \
   -shared -static -s -o "$OUT/MarkFar.dll" src/*.cpp src/markfar.def out/obj/md4c.o
 mkdir -p "$OUT/hrc" && cp hrc/markfar.hrc "$OUT/hrc/"
-cp lng/*.lng hlf/*.hlf "$OUT/"
-echo "Built $OUT/MarkFar.dll"
+VERSION=$(awk '/MARKFAR_VERSION_(MAJOR|MINOR|PATCH)/ {v = v (v == "" ? "" : ".") $3} END {print v}' src/version.hpp)
+cp lng/*.lng "$OUT/"
+for f in hlf/*.hlf; do sed "s/@VERSION@/$VERSION/" "$f" > "$OUT/$(basename "$f")"; done
+echo "Built $OUT/MarkFar.dll $VERSION"
 
 [[ "${1:-}" == noinstall ]] && exit 0
 command -v powershell.exe >/dev/null || exit 0   # not WSL: build only

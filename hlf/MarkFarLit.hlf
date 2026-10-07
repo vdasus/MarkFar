@@ -4,6 +4,8 @@
 
 @Contents
 $ #MarkFar#
+  Versija @VERSION@
+
   MarkFar rodo Markdown failą sutvarkytą: antraštes, paryškinimus, sąrašus,
 citatas, lenteles, nuorodas ir kodo blokus su formatavimu ir spalvomis,
 eilutes laužant pagal lango plotį. Kodo blokus spalvina įskiepis Colorer.

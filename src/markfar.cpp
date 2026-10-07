@@ -8,6 +8,7 @@
 #include <farcolor.hpp>
 
 #include "render.hpp"
+#include "version.hpp"
 
 #include <algorithm>
 #include <string>
@@ -332,34 +333,15 @@ void SetTop(intptr_t id, intptr_t line)
 	Far.EditorControl(id, ECTL_SETPOSITION, 0, &esp);
 }
 
-// Finds the Far window of an editor, by editor id or by file name.
-bool FindEditorWindow(intptr_t id, const std::wstring& file, intptr_t& pos, intptr_t& editorId)
+// Brings an open editor of `file` to the front, or opens one.
+void OpenEditor(const std::wstring& file, const wchar_t* title, EDITOR_FLAGS extra, intptr_t line, uintptr_t codePage)
 {
-	const intptr_t count = Far.AdvControl(&MainGuid, ACTL_GETWINDOWCOUNT, 0, nullptr);
-	for (intptr_t i = 0; i < count; ++i)
-	{
-		WindowInfo wi{sizeof(WindowInfo)};
-		wi.Pos = i;
-		if (!Far.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi) || wi.Type != WTYPE_EDITOR) continue;
-		std::wstring name(wi.NameSize, L'\0');
-		wi.Name = name.data();
-		Far.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi);
-		name.resize(wcslen(name.c_str()));
-		if ((id >= 0 && wi.Id == id) || (id < 0 && SamePath(name, file)))
-		{
-			pos = i;
-			editorId = wi.Id;
-			return true;
-		}
-	}
-	return false;
+	Far.Editor(file.c_str(), title, 0, 0, -1, -1, EF_NONMODAL | EF_IMMEDIATERETURN | extra, line, line < 0 ? -1 : 1, codePage);
 }
 
-void Activate(intptr_t pos)
-{
-	Far.AdvControl(&MainGuid, ACTL_SETCURRENTWINDOW, pos, nullptr);
-	Far.AdvControl(&MainGuid, ACTL_COMMIT, 0, nullptr);
-}
+// Source line to show once the source editor of `path` gets the focus.
+std::wstring PendingSource;
+int PendingSourceLine = 0;
 
 void SetKeyBar(intptr_t id, bool preview)
 {
@@ -373,7 +355,8 @@ void SetKeyBar(intptr_t id, bool preview)
 	KeyBarTitles titles{};
 	if (preview) { titles.CountLabels = std::size(preview_labels); titles.Labels = preview_labels; }
 	else { titles.CountLabels = std::size(source_labels); titles.Labels = source_labels; }
-	Far.EditorControl(id, ECTL_SETKEYBAR, 0, &titles);
+	FarSetKeyBarTitles set{sizeof(FarSetKeyBarTitles), &titles};
+	Far.EditorControl(id, ECTL_SETKEYBAR, 0, &set);
 }
 
 bool IsMarkdown(const std::wstring& file)
@@ -458,18 +441,14 @@ void OpenPreview(const std::wstring& source, const std::wstring& text, int topSo
 {
 	if (View* v = FindBySource(source); v && v->id >= 0)
 	{
-		intptr_t pos, id;
-		if (FindEditorWindow(v->id, L"", pos, id))
-		{
-			// Far edits only the current editor: switch first, re-render once
-			// the preview is in front (ProcessSynchroEventW).
-			v->text = text;
-			v->topSource = topSource;
-			v->stale = true;
-			Activate(pos);
-			Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(v->id));
-			return;
-		}
+		// Far changes only the current editor: bring the preview to the front,
+		// re-render once it is current (EE_GOTFOCUS / ProcessSynchroEventW).
+		v->text = text;
+		v->topSource = topSource;
+		v->stale = true;
+		OpenEditor(v->temp, nullptr, EF_OPENMODE_USEEXISTING, -1, CP_UTF8);
+		Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(v->id));
+		return;
 	}
 
 	View v;
@@ -497,13 +476,6 @@ void OpenPreview(const std::wstring& source, const std::wstring& text, int topSo
 
 void OpenFile(const std::wstring& path)
 {
-	// An open editor of the file holds the newest text, saved or not.
-	intptr_t pos, id;
-	if (FindEditorWindow(-1, path, pos, id))
-	{
-		OpenPreview(path, EditorText(id), static_cast<int>(GetEditorInfo(id).TopScreenLine));
-		return;
-	}
 	std::wstring text;
 	if (!ReadSource(path, text)) { ShowError(MCannotRead, path); return; }
 	OpenPreview(path, text, 0);
@@ -513,16 +485,9 @@ void SwitchToSource(View& v)
 {
 	const EditorInfo ei = GetEditorInfo(v.id);
 	const int line = SourceLineOf(v, ei.TopScreenLine);
-	intptr_t pos, id;
-	if (FindEditorWindow(-1, v.source, pos, id))
-	{
-		Activate(pos);
-		SetTop(id, line);
-		Far.EditorControl(id, ECTL_REDRAW, 0, nullptr);
-		return;
-	}
-	Far.Editor(v.source.c_str(), nullptr, 0, 0, -1, -1,
-		EF_NONMODAL | EF_IMMEDIATERETURN | EF_OPENMODE_USEEXISTING, line + 1, 1, CP_DEFAULT);
+	PendingSource = v.source;
+	PendingSourceLine = line;
+	OpenEditor(v.source, nullptr, EF_OPENMODE_USEEXISTING, line + 1, CP_DEFAULT);
 }
 
 void JumpHeading(View& v, bool forward)
@@ -628,7 +593,7 @@ void WINAPI GetGlobalInfoW(GlobalInfo* info)
 {
 	info->StructSize = sizeof(GlobalInfo);
 	info->MinFarVersion = FARMANAGERVERSION;
-	info->Version = MAKEFARVERSION(0, 1, 0, 0, VS_RELEASE);
+	info->Version = MAKEFARVERSION(MARKFAR_VERSION_MAJOR, MARKFAR_VERSION_MINOR, MARKFAR_VERSION_PATCH, 0, VS_RELEASE);
 	info->Guid = MainGuid;
 	info->Title = L"MarkFar";
 	info->Description = L"Markdown preview";
@@ -701,8 +666,21 @@ intptr_t WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 		break;
 	}
 	case EE_GOTFOCUS:
-		if (FindById(info->EditorID)) SetKeyBar(info->EditorID, true);
-		else if (Opt.f6InEditor && IsMarkdown(EditorFile(info->EditorID))) SetKeyBar(info->EditorID, false);
+		if (View* v = FindById(info->EditorID))
+		{
+			SetKeyBar(v->id, true);
+			if (v->stale) Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(v->id));
+		}
+		else
+		{
+			const std::wstring file = EditorFile(info->EditorID);
+			if (Opt.f6InEditor && IsMarkdown(file)) SetKeyBar(info->EditorID, false);
+			if (!PendingSource.empty() && SamePath(file, PendingSource))
+			{
+				SetTop(info->EditorID, PendingSourceLine);
+				PendingSource.clear();
+			}
+		}
 		break;
 	case EE_REDRAW:
 	{
