@@ -26,26 +26,22 @@ with Far, colours the code blocks.
    No administrator rights are needed.
 4. **Start Far.** `F11` now lists "MarkFar".
 
-Two optional steps, each done once:
+That is all. On its first start MarkFar sets itself up:
 
-5. **Colour code blocks** (` ```sql `, ` ```csharp `, ...):
-   1. `F9` → `Options` → `Plugins configuration` → `FarColorer` → `Enter`.
-   2. In the field **Custom schemas folder (hrc)** enter the full path of the
-      plugin's `hrc` folder, for example
-      `C:\Users\<you>\AppData\Roaming\Far Manager\Profile\Plugins\MarkFar\hrc`.
-   3. Press **OK**. If the field already holds another folder, copy
-      `MarkFar\hrc\markfar.hrc` into that folder instead.
-6. **Open `.md` files with `F3`:**
-   1. `F9` → `Commands` → `File associations` → `Ins`.
-   2. **Mask:** `*.md`
-   3. Tick **View command (used for F3)** and enter `markfar:!\!.!`
-   4. Leave the other commands empty, press **OK**. If another association
-      already matches `*.md`, move the new one above it.
+- **`F3` on a `.md` file** in a panel opens the preview (`Alt+F3` still opens
+  Far's viewer).
+- **Code blocks are coloured by Colorer:** MarkFar registers its scheme file
+  with Colorer. If Colorer's "Custom schemas folder (hrc)" is empty, MarkFar
+  points it at the plugin's `hrc` folder; if it already names another folder,
+  MarkFar copies `markfar.hrc` there. Colorer picks this up after a restart
+  of Far at the latest.
 
-   `Alt+F3` still opens Far's own viewer. Delete the association to undo.
+Both can be switched off in `F9` → `Options` → `Plugins configuration` →
+`MarkFar`; switching off undoes the change.
 
 **Update:** close Far, replace the `MarkFar` folder with the new one, start
-Far. **Remove:** close Far, delete the folder (and the association).
+Far. **Remove:** switch both settings above off, close Far, delete the
+folder.
 
 ## Use
 

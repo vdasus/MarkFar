@@ -27,6 +27,10 @@ constexpr GUID ConfigGuid = {0x3d573bd2, 0x1176, 0x4237, {0x9c, 0x5d, 0x6a, 0x22
 // {3A290698-DD8B-4800-B6D9-EC84560F5F91}
 constexpr GUID DialogGuid = {0x3a290698, 0xdd8b, 0x4800, {0xb6, 0xd9, 0xec, 0x84, 0x56, 0x0f, 0x5f, 0x91}};
 
+// FarColorer, whose settings MarkFar adjusts so that Colorer finds markfar.hrc.
+constexpr GUID ColorerGuid = {0xd2f36b62, 0xa470, 0x418d, {0x83, 0xa3, 0xed, 0x7a, 0x37, 0x10, 0xe5, 0xb5}};
+constexpr wchar_t ColorerKey[] = L"D2F36B62-A470-418D-83A3-ED7A3710E5B5";
+
 // Above Colorer, so MarkFar's colours win where both colour the same text.
 constexpr uintptr_t ColorPriority = EDITOR_COLOR_NORMAL_PRIORITY + 1;
 
@@ -45,6 +49,9 @@ enum MsgId
 	MKeyWrap,
 	MKeySource,
 	MKeyPreview,
+	MF3,
+	MColorer,
+	MColorerFailed,
 };
 
 PluginStartupInfo Far;
@@ -55,6 +62,8 @@ struct Options
 	bool wrap = true;
 	bool showUrls = true;
 	bool f6InEditor = true;
+	bool f3 = true;              // F3 on a Markdown file in a panel opens the preview
+	bool colorer = true;         // register markfar.hrc with Colorer
 } Opt;
 
 struct View
@@ -143,6 +152,8 @@ void LoadOptions()
 	Opt.wrap = s.Get(L"WordWrap", true);
 	Opt.showUrls = s.Get(L"ShowUrls", true);
 	Opt.f6InEditor = s.Get(L"F6InEditor", true);
+	Opt.f3 = s.Get(L"F3", true);
+	Opt.colorer = s.Get(L"Colorer", true);
 }
 
 void SaveOptions()
@@ -151,6 +162,112 @@ void SaveOptions()
 	s.Set(L"WordWrap", Opt.wrap);
 	s.Set(L"ShowUrls", Opt.showUrls);
 	s.Set(L"F6InEditor", Opt.f6InEditor);
+	s.Set(L"F3", Opt.f3);
+	s.Set(L"Colorer", Opt.colorer);
+}
+
+// --- setup: F3 macro and Colorer --------------------------------------
+
+std::wstring PluginDir()
+{
+	std::wstring dir = Far.ModuleName;
+	dir.resize(dir.find_last_of(L'\\'));
+	return dir;
+}
+
+std::wstring CurrentPanelFile();
+bool MacroAdded = false;
+constexpr intptr_t SetupEvent = -1;
+
+bool IsMarkdown(const std::wstring& file);
+
+// Condition of the F3 macro: a Markdown file under the cursor in a file panel.
+intptr_t WINAPI F3Condition(void*, FARADDKEYMACROFLAGS)
+{
+	PanelInfo pi{sizeof(PanelInfo)};
+	if (!Far.PanelControl(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, &pi)) return 0;
+	if (pi.PanelType != PTYPE_FILEPANEL || (pi.Flags & PFLAGS_PLUGIN)) return 0;
+	return IsMarkdown(CurrentPanelFile()) ? 1 : 0;
+}
+
+// The macro lives only in memory: MarkFar adds it on every start of Far
+// (PF_PRELOAD) and removes it when the setting is switched off.
+void SetupF3(bool enable)
+{
+	static int id;   // the macro's identity: its address
+	if (enable == MacroAdded) return;
+	if (enable)
+	{
+		MacroAddMacro m{sizeof(MacroAddMacro), &id, L"Plugin.Call(\"68FB4233-2F10-4C2F-8B08-14DDD4EE68F5\", \"F3\")",
+			L"MarkFar: F3 opens the preview of a Markdown file", KMFLAGS_LUA, {}, MACROAREA_SHELL, F3Condition, 0};
+		m.AKey.EventType = KEY_EVENT;
+		m.AKey.Event.KeyEvent.bKeyDown = TRUE;
+		m.AKey.Event.KeyEvent.wRepeatCount = 1;
+		m.AKey.Event.KeyEvent.wVirtualKeyCode = VK_F3;
+		MacroAdded = Far.MacroControl(&MainGuid, MCTL_ADDMACRO, 0, &m) != 0;
+	}
+	else
+	{
+		Far.MacroControl(&MainGuid, MCTL_DELMACRO, 0, &id);
+		MacroAdded = false;
+	}
+}
+
+// Points Colorer's "Custom schemas folder (hrc)" at the plugin's hrc folder.
+// If the user already has a custom folder, copies markfar.hrc into it instead.
+// Returns true when Colorer's settings changed (Colorer must reload them).
+bool SetupColorer(bool enable)
+{
+	FarSettingsCreate fsc{sizeof(FarSettingsCreate), ColorerGuid, INVALID_HANDLE_VALUE};
+	if (!Far.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, PSL_ROAMING, &fsc)) return false;
+	const HANDLE h = fsc.Handle;
+	FarSettingsValue sub{sizeof(FarSettingsValue), 0, ColorerKey};
+	intptr_t key = Far.SettingsControl(h, SCTL_OPENSUBKEY, 0, &sub);
+	if (!key) key = Far.SettingsControl(h, SCTL_CREATESUBKEY, 0, &sub);
+
+	FarSettingsItem item{sizeof(FarSettingsItem), static_cast<size_t>(key), L"UserHrcPath", FST_STRING, {}};
+	std::wstring current;
+	if (key && Far.SettingsControl(h, SCTL_GET, 0, &item) && item.String) current = item.String;
+	const std::wstring ours = PluginDir() + L"\\hrc";
+
+	bool changed = false;
+	auto set = [&](const wchar_t* value)
+	{
+		FarSettingsItem w{sizeof(FarSettingsItem), static_cast<size_t>(key), L"UserHrcPath", FST_STRING, {}};
+		w.String = value;
+		changed = key && Far.SettingsControl(h, SCTL_SET, 0, &w);
+	};
+	if (enable)
+	{
+		if (current.empty()) set(ours.c_str());
+		else if (Lower(current) != Lower(ours)
+			&& !CopyFileW((ours + L"\\markfar.hrc").c_str(), (current + L"\\markfar.hrc").c_str(), FALSE))
+		{
+			const wchar_t* lines[] = {Msg(MTitle), Msg(MColorerFailed), current.c_str()};
+			Far.Message(&MainGuid, nullptr, FMSG_WARNING | FMSG_MB_OK, nullptr, lines, 3, 0);
+		}
+	}
+	else
+	{
+		if (Lower(current) == Lower(ours)) set(L"");
+		else if (!current.empty()) DeleteFileW((current + L"\\markfar.hrc").c_str());
+	}
+	Far.SettingsControl(h, SCTL_FREE, 0, nullptr);
+	return changed;
+}
+
+void ReloadColorer()
+{
+	MacroSendMacroText m{sizeof(MacroSendMacroText), KMFLAGS_LUA, {},
+		L"if Plugin.Exist(\"D2F36B62-A470-418D-83A3-ED7A3710E5B5\") then Plugin.Call(\"D2F36B62-A470-418D-83A3-ED7A3710E5B5\", \"Settings\", \"Reload\") end"};
+	Far.MacroControl(&MainGuid, MCTL_SENDSTRING, MSSC_POST, &m);
+}
+
+// Brings the F3 macro and the Colorer registration in line with the settings.
+void ApplySetup()
+{
+	SetupF3(Opt.f3);
+	if (SetupColorer(Opt.colorer)) ReloadColorer();
 }
 
 // --- colours --------------------------------------------------------------
@@ -549,26 +666,31 @@ std::wstring CurrentPanelFile()
 
 bool Configure()
 {
-	const int w = 60, h = 9;
+	const int w = 64, h = 11;
 	FarDialogItem items[] = {
 		{DI_DOUBLEBOX, 3, 1, w - 4, h - 2, {}, nullptr, nullptr, DIF_NONE, Msg(MConfigTitle)},
 		{DI_CHECKBOX, 5, 2, 0, 2, {Opt.wrap}, nullptr, nullptr, DIF_NONE, Msg(MWrap)},
 		{DI_CHECKBOX, 5, 3, 0, 3, {Opt.showUrls}, nullptr, nullptr, DIF_NONE, Msg(MShowUrls)},
 		{DI_CHECKBOX, 5, 4, 0, 4, {Opt.f6InEditor}, nullptr, nullptr, DIF_NONE, Msg(MF6InEditor)},
-		{DI_TEXT, -1, 5, 0, 5, {}, nullptr, nullptr, DIF_SEPARATOR, L""},
-		{DI_BUTTON, 0, 6, 0, 6, {}, nullptr, nullptr, DIF_CENTERGROUP | DIF_DEFAULTBUTTON, Msg(MOk)},
-		{DI_BUTTON, 0, 6, 0, 6, {}, nullptr, nullptr, DIF_CENTERGROUP, Msg(MCancel)},
+		{DI_CHECKBOX, 5, 5, 0, 5, {Opt.f3}, nullptr, nullptr, DIF_NONE, Msg(MF3)},
+		{DI_CHECKBOX, 5, 6, 0, 6, {Opt.colorer}, nullptr, nullptr, DIF_NONE, Msg(MColorer)},
+		{DI_TEXT, -1, 7, 0, 7, {}, nullptr, nullptr, DIF_SEPARATOR, L""},
+		{DI_BUTTON, 0, 8, 0, 8, {}, nullptr, nullptr, DIF_CENTERGROUP | DIF_DEFAULTBUTTON, Msg(MOk)},
+		{DI_BUTTON, 0, 8, 0, 8, {}, nullptr, nullptr, DIF_CENTERGROUP, Msg(MCancel)},
 	};
 	HANDLE dlg = Far.DialogInit(&MainGuid, &DialogGuid, -1, -1, w, h, L"Settings", items, std::size(items), 0, FDLG_NONE, nullptr, nullptr);
 	if (dlg == INVALID_HANDLE_VALUE) return false;
-	const bool ok = Far.DialogRun(dlg) == 5;
+	const bool ok = Far.DialogRun(dlg) == 7;
 	if (ok)
 	{
 		auto checked = [&](int i) { return Far.SendDlgMessage(dlg, DM_GETCHECK, i, nullptr) == BSTATE_CHECKED; };
 		Opt.wrap = checked(1);
 		Opt.showUrls = checked(2);
 		Opt.f6InEditor = checked(3);
+		Opt.f3 = checked(4);
+		Opt.colorer = checked(5);
 		SaveOptions();
+		ApplySetup();
 	}
 	Far.DialogFree(dlg);
 	return ok;
@@ -606,6 +728,9 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* info)
 	Fsf = *info->FSF;
 	Far.FSF = &Fsf;
 	LoadOptions();
+	// Macros and Colorer are ready only once Far is up: finish setup from
+	// ProcessSynchroEventW (Param SetupEvent; editor ids are 0 and up).
+	Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(SetupEvent));
 }
 
 void WINAPI GetPluginInfoW(PluginInfo* info)
@@ -615,7 +740,7 @@ void WINAPI GetPluginInfoW(PluginInfo* info)
 	menu[0] = Msg(MTitle);
 	config[0] = Msg(MTitle);
 	info->StructSize = sizeof(PluginInfo);
-	info->Flags = PF_EDITOR;
+	info->Flags = PF_EDITOR | PF_PRELOAD;
 	info->PluginMenu.Guids = &MenuGuid;
 	info->PluginMenu.Strings = menu;
 	info->PluginMenu.Count = 1;
@@ -638,6 +763,13 @@ HANDLE WINAPI OpenW(const OpenInfo* info)
 	case OPEN_PLUGINSMENU:
 		if (const std::wstring file = CurrentPanelFile(); !file.empty()) OpenFile(file);
 		break;
+	case OPEN_FROMMACRO:
+	{
+		const auto* mi = reinterpret_cast<const OpenMacroInfo*>(info->Data);
+		if (mi && mi->Count > 0 && mi->Values[0].Type == FMVT_STRING && std::wstring(mi->Values[0].String) == L"F3")
+			if (const std::wstring file = CurrentPanelFile(); !file.empty()) OpenFile(file);
+		break;
+	}
 	case OPEN_EDITOR:
 	{
 		const EditorInfo ei = GetEditorInfo(-1);
@@ -725,6 +857,7 @@ intptr_t WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 {
 	if (info->Event != SE_COMMONSYNCHRO) return 0;
 	const intptr_t id = reinterpret_cast<intptr_t>(info->Param);
+	if (id == SetupEvent) { ApplySetup(); return 0; }
 	View* v = FindById(id);
 	if (!v || GetEditorInfo(-1).EditorID != id) return 0;
 	const EditorInfo ei = GetEditorInfo(id);

@@ -26,10 +26,13 @@ $ #Kaip atverti peržiūrą#
 
   #markfar:<failas># komandų eilutėje atveria <failo> peržiūrą.
 
-  #F3 ant .md failų.# Pridėkite failų susiejimą
-#F9 → Komandos → Failų susiejimai#: kaukė #*.md#, peržiūros komanda (F3)
-#markfar:!\!.!#. Norėdami grąžinti Far peržiūros programą, ištrinkite
-susiejimą.
+  #F3# ant .md arba .markdown failo failų skydelyje atveria peržiūrą
+(nustatymas „F3 ant Markdown failo...“). #Alt+F3# ir toliau atveria Far
+peržiūros programą.
+
+  #markfar:<failas># galima naudoti ir failų susiejime, pavyzdžiui, kitiems
+plėtiniams: #F9 → Komandos → Failų susiejimai#, peržiūros komanda (F3)
+#markfar:!\!.!#.
 
   Jei failas atvertas Far redaktoriuje, peržiūra rodo redaktoriaus tekstą,
 įskaitant dar neįrašytus pakeitimus.
@@ -61,14 +64,23 @@ $ #Nustatymai#
   #F6 Markdown redaktoriuje atveria peržiūrą#
   ^<wrap>Kai išjungta, #F6# .md failo redaktoriuje, kaip įprasta, atveria Far peržiūros programą.
 
+  #F3 ant Markdown failo skydeliuose atveria peržiūrą#
+  ^<wrap>Makrokomanda, kurią MarkFar prideda paleidžiant Far. Kai išjungta, #F3# atveria Far peržiūros programą.
+
+  #Spalvinti kodo blokus per Colorer#
+  ^<wrap>Užregistruoja #markfar.hrc# Colorer įskiepyje, žr. ~Colorer ir kodo blokai~@Colorer@.
+
 @Colorer
 $ #Colorer ir kodo blokai#
   Kodo blokus su kalbos žyme (#```sql#, #```csharp#, ...) spalvina įskiepis
 Colorer pagal schemų failą #markfar.hrc#, esantį įskiepio aplanke #hrc#.
-Vieną kartą nurodykite Colorer šį aplanką:
+MarkFar jį užregistruoja paleidžiant Far (nustatymas „Spalvinti kodo blokus
+per Colorer“):
 
-  #F9 → Parinktys → Įskiepių konfigūracija → FarColorer#, laukas
-#Custom schemas folder (hrc)#, visas aplanko #hrc# kelias, pavyzdžiui,
-išskleistas #%APPDATA%\Far Manager\Profile\Plugins\MarkFar\hrc#.
+  - ^<wrap>jei Colorer laukas #Custom schemas folder (hrc)# tuščias, MarkFar įrašo įskiepio aplanką #hrc#;
+  - ^<wrap>jei jame jau nurodytas kitas aplankas, MarkFar nukopijuoja į jį #markfar.hrc#.
+
+  Išjungus nustatymą, tai atšaukiama. Colorer pakeitimą pritaiko perkrovęs
+schemas, vėliausiai iš naujo paleidus Far.
 
   Be Colorer kodo blokai rodomi viena spalva.
