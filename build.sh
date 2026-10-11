@@ -26,8 +26,11 @@ echo "Built $OUT/MarkFar.dll $VERSION"
 [[ "${1:-}" == noinstall ]] && exit 0
 command -v powershell.exe >/dev/null || exit 0   # not WSL: build only
 
-APPDATA_WIN=$(powershell.exe -NoProfile -Command '$env:APPDATA' | tr -d '\r')
-DEST="$(wslpath "$APPDATA_WIN")/Far Manager/Profile/Plugins/MarkFar"
-mkdir -p "$DEST"
-cp -r "$OUT"/* "$DEST/" || { echo "Install failed: close Far Manager and run build.sh again."; exit 1; }
-echo "Installed to $APPDATA_WIN\\Far Manager\\Profile\\Plugins\\MarkFar"
+# MARKFAR_DEST (a WSL path) overrides the target, e.g. for a portable Far.
+if [[ -z "${MARKFAR_DEST:-}" ]]; then
+  APPDATA_WIN=$(powershell.exe -NoProfile -Command '$env:APPDATA' | tr -d '\r')
+  MARKFAR_DEST="$(wslpath "$APPDATA_WIN")/Far Manager/Profile/Plugins/MarkFar"
+fi
+mkdir -p "$MARKFAR_DEST"
+cp -r "$OUT"/* "$MARKFAR_DEST/" || { echo "Install failed: close Far Manager and run build.sh again."; exit 1; }
+echo "Installed to $(wslpath -w "$MARKFAR_DEST")"

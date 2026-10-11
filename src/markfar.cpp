@@ -178,6 +178,10 @@ std::wstring PluginDir()
 std::wstring CurrentPanelFile();
 bool MacroAdded = false;
 constexpr intptr_t SetupEvent = -1;
+constexpr intptr_t KeyBarF3Event = -2;
+// A left click on the bottom line of the panels: the key bar sends its key
+// straight to the panels, past the F3 macro, so the viewer it opens is replaced.
+bool KeyBarClick = false;
 
 bool IsMarkdown(const std::wstring& file);
 
@@ -735,7 +739,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* info)
 	Far.FSF = &Fsf;
 	LoadOptions();
 	// Macros and Colorer are ready only once Far is up: finish setup from
-	// ProcessSynchroEventW (Param SetupEvent; editor ids are 0 and up).
+	// ProcessSynchroEventW (Param SetupEvent or KeyBarF3Event; editor ids are 0 and up).
 	Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(SetupEvent));
 }
 
@@ -864,6 +868,12 @@ intptr_t WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 	if (info->Event != SE_COMMONSYNCHRO) return 0;
 	const intptr_t id = reinterpret_cast<intptr_t>(info->Param);
 	if (id == SetupEvent) { ApplySetup(); return 0; }
+	if (id == KeyBarF3Event)
+	{
+		Far.ViewerControl(-1, VCTL_QUIT, 0, nullptr);
+		if (const std::wstring file = CurrentPanelFile(); !file.empty()) OpenFile(file);
+		return 0;
+	}
 	View* v = FindById(id);
 	if (!v || GetEditorInfo(-1).EditorID != id) return 0;
 	const EditorInfo ei = GetEditorInfo(id);
@@ -873,6 +883,37 @@ intptr_t WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 		Rerender(*v, v->topSource);
 	}
 	else if (TextWidth(static_cast<int>(ei.WindowSizeX)) != v->width) Rerender(*v, SourceLineOf(*v, ei.TopScreenLine));
+	return 0;
+}
+
+intptr_t WINAPI ProcessConsoleInputW(ProcessConsoleInputInfo* info)
+{
+	const INPUT_RECORD& rec = info->Rec;
+	if (rec.EventType == KEY_EVENT) KeyBarClick = false;
+	if (rec.EventType != MOUSE_EVENT || rec.Event.MouseEvent.dwEventFlags || !rec.Event.MouseEvent.dwButtonState) return 0;
+	// The right button and the modifiers make Alt+F3 and others: Far's viewer stays.
+	const auto& m = rec.Event.MouseEvent;
+	SMALL_RECT r{};
+	WindowType wt{sizeof(WindowType)};
+	KeyBarClick = Opt.f3 && m.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED
+		&& !(m.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED | LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED | SHIFT_PRESSED))
+		&& Far.AdvControl(&MainGuid, ACTL_GETFARRECT, 0, &r) && m.dwMousePosition.Y == r.Bottom - r.Top
+		&& Far.AdvControl(&MainGuid, ACTL_GETWINDOWTYPE, 0, &wt) && wt.Type == WTYPE_PANELS;
+	return 0;
+}
+
+intptr_t WINAPI ProcessViewerEventW(const ProcessViewerEventInfo* info)
+{
+	if (info->Event != VE_READ || !KeyBarClick) return 0;
+	KeyBarClick = false;
+	if (!F3Condition(nullptr, 0)) return 0;
+	const intptr_t size = Far.ViewerControl(info->ViewerID, VCTL_GETFILENAME, 0, nullptr);
+	if (size <= 0) return 0;
+	std::wstring file(size, L'\0');
+	Far.ViewerControl(info->ViewerID, VCTL_GETFILENAME, size, file.data());
+	file.resize(wcslen(file.c_str()));
+	if (SamePath(file, CurrentPanelFile()))
+		Far.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, reinterpret_cast<void*>(KeyBarF3Event));
 	return 0;
 }
 

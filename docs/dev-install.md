@@ -53,8 +53,9 @@ tar -xJf llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64.tar.xz && rm llvm-mingw-*.
    ```
 
    It compiles `out/MarkFar/MarkFar.dll` and copies the `out/MarkFar` folder
-   to `%APPDATA%\Far Manager\Profile\Plugins\MarkFar`.
-   `./build.sh noinstall` only builds.
+   to `%APPDATA%\Far Manager\Profile\Plugins\MarkFar`. For a Far that loads
+   plugins from elsewhere (a portable Far), set `MARKFAR_DEST` to the target
+   folder as a WSL path. `./build.sh noinstall` only builds.
 3. Start Far. On the first start after a new or changed plugin, Far finds it
    and adds it to its plugin cache.
 

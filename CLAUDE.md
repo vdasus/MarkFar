@@ -28,6 +28,8 @@ ones before changing behaviour.
 - Build under WSL: `./build.sh` (installs into
   `%APPDATA%\Far Manager\Profile\Plugins\MarkFar`; fails while Far runs —
   ask the owner to close Far), `./build.sh noinstall` to build only.
+  `MARKFAR_DEST=<WSL path> ./build.sh` installs elsewhere; the owner's Far is
+  portable and loads plugins from its own `Plugins` folder (see memory).
 - `cmd.exe`, `.cmd` and `.bat` are blocked by group policy on the owner's
   machine; PowerShell runs in Constrained Language mode. Do not add Windows
   batch scripts.
