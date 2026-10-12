@@ -236,6 +236,11 @@ bool SetupColorer(bool enable)
 	std::wstring current;
 	if (Far.SettingsControl(h, SCTL_GET, 0, &item) && item.String) current = item.String;
 	const std::wstring ours = PluginDir() + L"\\hrc";
+	// A folder that is gone, or the hrc folder of another MarkFar copy (the
+	// plugin was moved), is a stale registration: point Colorer at ours.
+	const std::wstring module = Far.ModuleName;
+	const bool stale = !current.empty() && (GetFileAttributesW(current.c_str()) == INVALID_FILE_ATTRIBUTES
+		|| GetFileAttributesW((current + L"\\.." + module.substr(module.find_last_of(L'\\'))).c_str()) != INVALID_FILE_ATTRIBUTES);
 
 	bool changed = false;
 	auto set = [&](const wchar_t* value)
@@ -246,7 +251,7 @@ bool SetupColorer(bool enable)
 	};
 	if (enable)
 	{
-		if (current.empty()) set(ours.c_str());
+		if (current.empty() || (stale && !SamePath(current, ours))) set(ours.c_str());
 		else if (Lower(current) != Lower(ours)
 			&& !CopyFileW((ours + L"\\markfar.hrc").c_str(), (current + L"\\markfar.hrc").c_str(), FALSE))
 		{
@@ -256,7 +261,7 @@ bool SetupColorer(bool enable)
 	}
 	else
 	{
-		if (Lower(current) == Lower(ours)) set(L"");
+		if (stale || SamePath(current, ours)) set(L"");
 		else if (!current.empty()) DeleteFileW((current + L"\\markfar.hrc").c_str());
 	}
 	Far.SettingsControl(h, SCTL_FREE, 0, nullptr);
