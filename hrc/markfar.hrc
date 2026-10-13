@@ -12,6 +12,9 @@
   where <type> is a Colorer type name. Inside lists and quotes the lines
   carry the list indent or the quote bar "│ " in front. Each block below hands its body to
   that type's scheme. Adding a language is one block line and one scheme line.
+  content-priority="low" lets the closing frame end a block even when the
+  language scheme left a construct open (an unclosed brace, a PowerShell
+  command); otherwise the language would leak into the blocks below.
 -->
 <hrc version="take5" xmlns="http://colorer.sf.net/2003/hrc"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -52,47 +55,47 @@
   <region name="MdFence" parent="Frame"/>
   <scheme name="code-markdown">
     <inherit scheme="Wrap"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:sql|tsql|plsql)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-sql" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:cs|csharp|c#)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:py|python)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-python" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:js|javascript|jsx|mjs|ts|typescript|tsx)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:json|jsonc)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-json" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:ps|ps1|powershell|pwsh)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:yaml|yml)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:xml|xaml|csproj|svg)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-xml" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:html|htm)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-html" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:sh|bash|shell|zsh)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-shell" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:cpp|c\+\+|cc|cxx|hpp)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:c|h)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-c" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:java)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-java" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:css)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-css" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:bat|cmd|batch)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:diff|patch)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-diff" region00="Frame" region10="Frame"/>
-    <block start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:go|golang)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-go" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:sql|tsql|plsql)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-sql" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:cs|csharp|c#)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:py|python)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-python" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:js|javascript|jsx|mjs|ts|typescript|tsx)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:json|jsonc)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-json" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:ps|ps1|powershell|pwsh)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:yaml|yml)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:xml|xaml|csproj|svg)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-xml" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:html|htm)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-html" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:sh|bash|shell|zsh)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-shell" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:cpp|c\+\+|cc|cxx|hpp)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:c|h)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-c" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:java)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-java" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:css)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-css" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:bat|cmd|batch)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:diff|patch)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-diff" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^[\s│]*(?{MdFence}`{3,}|\~{3,})\s*(?:go|golang)(?:\s.*)?$/i" end="/^[\s│]*(\y{MdFence})\s*$/" scheme="code-go" region00="Frame" region10="Frame"/>
     <inherit scheme="markdown:markdown"/>
   </scheme>
   <scheme name="code-diff"><inherit scheme="Wrap"/><inherit scheme="diff:diff"/></scheme>
   <scheme name="code-go"><inherit scheme="Wrap"/><inherit scheme="go:go"/></scheme>
 
   <scheme name="markfar">
-    <block start="/^.*?(── sql ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-sql" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── csharp ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── python ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-python" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── jScript ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── json ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-json" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── powershell ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── yaml ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── xml ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-xml" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── html ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-html" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── shell ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-shell" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── cpp ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── c ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-c" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── java ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-java" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── css ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-css" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── Batch ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── markdown ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-markdown" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── diff ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-diff" region00="Frame" region10="Frame"/>
-    <block start="/^.*?(── go ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-go" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── sql ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-sql" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── csharp ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-csharp" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── python ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-python" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── jScript ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-jScript" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── json ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-json" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── powershell ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-powershell" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── yaml ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-yaml" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── xml ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-xml" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── html ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-html" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── shell ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-shell" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── cpp ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-cpp" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── c ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-c" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── java ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-java" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── css ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-css" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── Batch ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-Batch" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── markdown ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-markdown" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── diff ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-diff" region00="Frame" region10="Frame"/>
+    <block content-priority="low" start="/^.*?(── go ─+)$/" end="/^[\s│]*(─+)$/" scheme="code-go" region00="Frame" region10="Frame"/>
   </scheme>
 </type>
 </hrc>
